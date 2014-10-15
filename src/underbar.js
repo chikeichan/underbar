@@ -86,6 +86,11 @@ var _ = {};
     // map() is a useful primitive iteration function that works a lot
     // like each(), but in addition to running the operation on all
     // the members, it also maintains an array of results.
+    var aArray = [];
+    for(var i=0;i<collection.length;i++){
+      aArray.push(iterator(collection[i]));
+    }
+    return aArray;
   };
 
   /*
@@ -109,6 +114,20 @@ var _ = {};
   // Calls the method named by functionOrKey on each value in the list.
   // Note: you will nead to learn a bit about .apply to complete this.
   _.invoke = function(collection, functionOrKey, args) {
+    /*
+    //This is the first implementation
+    var aArray = [];
+    for(var i=0;i<collection.length;i++){
+      aArray.push(functionOrKey.apply(collection[i]))
+    };
+    return aArray;
+    */
+    return typeof functionOrKey==="function" ? _.map(collection,function(x){
+      return functionOrKey.apply(x);
+    }) : _.map(collection,function(x){
+      return x[functionOrKey]();
+    })
+
   };
 
   // Reduces an array or object to a single value by repetitively calling

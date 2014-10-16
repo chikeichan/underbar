@@ -278,6 +278,7 @@ var _ = {};
 
     // TIP: We'll return a new function that delegates to the old one, but only
     // if it hasn't been called before.
+
     return function() {
       if (!alreadyCalled) {
         // TIP: .apply(this, arguments) is the standard way to pass on all of the
@@ -297,6 +298,16 @@ var _ = {};
   // already computed the result for the given argument and return that value
   // instead if possible.
   _.memoize = function(func) {
+    var preArg;
+    var result;
+
+    return function() {
+      if (preArg != arguments[0]) {
+        preArg = arguments[0];
+        result = func.apply(this, arguments);
+      }
+      return result;
+    };
   };
 
   // Delays a function for the given number of milliseconds, and then calls
@@ -306,6 +317,13 @@ var _ = {};
   // parameter. For example _.delay(someFunction, 500, 'a', 'b') will
   // call someFunction('a', 'b') after 500ms
   _.delay = function(func, wait) {
+    var arg = [];
+    for (var i=2;i<arguments.length;i++){
+      arg.push(arguments[i]);
+    };
+
+    setTimeout(function(){func.apply(this, arg)},wait);
+
   };
 
 

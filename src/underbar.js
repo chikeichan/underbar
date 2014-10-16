@@ -415,16 +415,61 @@ var _ = {};
   //
   // Hint: Use Array.isArray to check if something is an array
   _.flatten = function(nestedArray, result) {
+    var answer = result || [];
+
+      _.each(nestedArray, function(x){
+        if(Array.isArray(x)) {
+          _.flatten(x,answer);
+        } else {
+          answer.push(x);
+        }
+      })
+
+    return answer;
   };
 
   // Takes an arbitrary number of arrays and produces an array that contains
   // every item shared between all the passed-in arrays.
   _.intersection = function() {
+    var answer = [];
+    var list = _.uniq(_.flatten(arguments,[]));
+    var oArg = arguments;
+
+    _.each(list, function(x){
+      var isContained = true;
+      _.each(oArg, function(y){
+        if(!_.contains(y,x)){
+          isContained = false;
+        }
+      })
+      if(isContained) {
+        answer.push(x);
+      }
+    })
+
+    return answer;
   };
 
   // Take the difference between one array and a number of other arrays.
   // Only the elements present in just the first array will remain.
   _.difference = function(array) {
+    var answer = [];
+    var list = _.uniq(arguments[0]);
+    var oArg = arguments;
+
+    _.each(list, function(x){
+      var isContained = false;
+      _.each(oArg, function(y,i){
+        if(_.contains(y,x) && i!=0){
+          isContained = true;
+        }
+      })
+      if(!isContained) {
+        answer.push(x);
+      }
+    })
+
+    return answer;
   };
 
 
@@ -438,6 +483,28 @@ var _ = {};
   //
   // See the Underbar readme for details.
   _.throttle = function(func, wait) {
+    
+    var alreadyCalled = false;
+    var result;
+
+    return function(){
+      if(!alreadyCalled){
+        result = func.apply(this,arguments);
+        alreadyCalled = true;
+        setTimeout(function(){
+            alreadyCalled = false;
+          },wait)
+      } else {
+        _.delay(function(){
+          result = func.apply(this.arguments);
+          alreadyCalled = true;
+          return result;
+        },wait)
+      }
+      return result;
+    }
+  
   };
+
 
 }).call(this);

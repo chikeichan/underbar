@@ -113,9 +113,10 @@ var _ = {};
     // like each(), but in addition to running the operation on all
     // the members, it also maintains an array of results.
     var aArray = [];
-    for(var i=0;i<collection.length;i++){
-      aArray.push(iterator(collection[i]));
-    }
+      _.each(collection, function(x){
+        aArray.push(iterator(x));
+      }
+    )
     return aArray;
   };
 
@@ -360,6 +361,32 @@ var _ = {};
   // of that string. For example, _.sortBy(people, 'name') should sort
   // an array of people by their name.
   _.sortBy = function(collection, iterator) {
+    var aArray = [];
+
+    _.each(collection, function(x, i){
+      if(i===0) {
+          aArray[i] = x;
+        } else {
+            for (var j = 0, len = aArray.length; j<len; j++) {
+              var ix = typeof iterator === "function" ? iterator(x) : x[iterator];
+              var ij = typeof iterator === "function" ? iterator(aArray[j]) : aArray[j][iterator];
+              if (ix < ij && ix != undefined){
+                aArray.splice(j,0,x);
+                break;
+              } else if (ix === undefined){
+                aArray.push(x);
+                break;
+              } else if (ij === undefined){
+                aArray.splice(j,0,x);
+                break;
+              } else if (j===aArray.length-1) {
+                aArray.push(x)
+                break;
+              } 
+            }
+          }
+    })
+    return aArray;
   };
 
   // Zip together two or more arrays with elements of the same index
@@ -368,6 +395,19 @@ var _ = {};
   // Example:
   // _.zip(['a','b','c','d'], [1,2,3]) returns [['a',1], ['b',2], ['c',3], ['d',undefined]]
   _.zip = function() {
+    var length = 0;
+    
+    for (var i=0; i<arguments.length; i++) {
+      length = length > arguments[i].length ? length : arguments[i].length;
+    }    
+
+    var aArray = new Array(length);
+
+    for (var i=0; i<length; i++){
+      aArray[i] = _.pluck(arguments, i);
+    }
+
+    return aArray;
   };
 
   // Takes a multidimensional array and converts it to a one-dimensional array.
